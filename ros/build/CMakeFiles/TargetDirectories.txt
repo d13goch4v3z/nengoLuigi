@@ -1,0 +1,3 @@
+/home/cortana/nengo_loihi_debug/ros/build/CMakeFiles/rebuild_cache.dir
+/home/cortana/nengo_loihi_debug/ros/build/CMakeFiles/edit_cache.dir
+/home/cortana/nengo_loihi_debug/ros/build/CMakeFiles/rosIOsnip.dir
