@@ -25,19 +25,37 @@ class lui:
 
     def setupNetwork(self): 
         # instantiate the board, (boardId, numChips, numCoresPerChip, numNeuronsPerCore)
-        boardId = 1
+        boardId = 1 
         numChips = 1
-        numCoresPerChip = [10]
-        numSynapsesPerCore = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
-        board = N2Board(boardId, numChips, numCoresPerChip, numSynapsesPerCore)
+        numCoresPerChip = [1]
+        numCompartmentsPerCore = [[100]]
+        board = N2Board(boardId, numChips, numCoresPerChip, numCompartmentsPerCore)
         # obatin the cores object 
         n2Cores = board.n2Chips[0].n2CoresAsList
+
         # configure a core to be driven by a bias
-        n2Cores[0].cxProfileCfg[0].configure(decayV=int(1/16*2**12))
-        n2Cores[0].cxMetaState[0].configure(phase0=2) # 2 allows the compartment to be driven by a bias state
-        n2Cores[0].vthProfileCfg[0].staticCfg.configure(vth=1000) #numerical threshold mantissa is vth*(2^6) = 1000*2^6 = 64000
+        n2Cores[0].cxProfileCfg[0].configure(decayV=int(1/16*2**12), decayU = int(1/16*2**12))
+        n2Cores[0].vthProfileCfg[0].staticCfg.configure(vth=10) #numerical threshold mantissa is vth*(2^6) = 640
         n2Cores[0].numUpdates.configure(numUpdates=1)
-        n2Cores[0].cxCfg[0].configure(bias=100, biasExp=6, vthProfile=0, cxProfile=0) # configure bias and mantissa exponent bias*(2^6) = 6400
+        n2Cores[0].cxCfg[0].configure(vthProfile=0, cxProfile=0) # configure bias and mantissa exponent bias*(2^6) = 6400
+
+        # configure the synaptic parameters (weight and synaptic formatId)
+        
+        for i, j in enumerate(n2Cores[0].synapses): 
+            j.CIdx = 0
+            j.Wgt = 64
+            j.synFmtId = 1
+            j.synapseFmt[1].wgtExp = 0
+            j.synapseFmt[1].wgtBits = 7
+            j.synapseFmt[1].numSynapses = 63
+            j.synapseFmt[1].cIdxOffset = 0
+            j.synapseFmt[1].cIdxMult = 0
+            j.synapseFmt[1].idxBits = 1
+            j.synapseFmt[1].fanoutType = 2
+            j.synapseFmt[1].compression = 0
+
+
+        # configure the synapse format
 
         for coreId, n2Core in enumerate(n2Cores[1:]):
             n2Core.numUpdates.configure(numUpdates=1)
@@ -114,18 +132,18 @@ if __name__ == "__main__":
     for coreId, probes in enumerate(output):
         # Since there are no incoming spikes and noise is disabled by default, u
         # remains constant at 0 for source core
-        plt.subplot(4, 3, coreId+1)
-        probes[0].plot()
-        plt.title('%d: u' % coreId)
+        # plt.subplot(4, 3, coreId+1)
+        # probes[0].plot()
+        # plt.title('%d: u' % coreId)
 
-        # v increases due to the bias current.  The concave nature of the curve
-        # when the voltage is increasing is due to the decay constant.  Upon
-        # reaching the threshold of 64000, the compartment spikes and resets
-        # to 0. Since there is no refractory period, the voltage immediate
-        # begins to increase again.
-        plt.subplot(4, 3, coreId+1)
-        probes[1].plot()
-        plt.title('%d: v' % coreId)
+        # # v increases due to the bias current.  The concave nature of the curve
+        # # when the voltage is increasing is due to the decay constant.  Upon
+        # # reaching the threshold of 64000, the compartment spikes and resets
+        # # to 0. Since there is no refractory period, the voltage immediate
+        # # begins to increase again.
+        # plt.subplot(4, 3, coreId+1)
+        # probes[1].plot()
+        # plt.title('%d: v' % coreId)
 
         plt.subplot(4, 3, coreId+1)
         probes[2].plot()

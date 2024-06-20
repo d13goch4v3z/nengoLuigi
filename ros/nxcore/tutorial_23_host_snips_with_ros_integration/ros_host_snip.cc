@@ -15,7 +15,15 @@ no express or implied warranties, other than those that are
 expressly stated in the License.
 */
 
-// include/import standard lirbaries
+// Adapted from
+// http://wiki.ros.org/ROS/Tutorials/WritingPublisherSubscriber%28c%2B%2B%29
+
+// Note: You may want to implement your own Spinner or implement custom callback
+// queues Refer http://wiki.ros.org/roscpp/Overview/Callbacks%20and%20Spinning
+// Also:
+// https://answers.ros.org/question/53055/ros-callbacks-threads-and-spinning/
+// Please consider your host cpu configuration if you need multiple threads
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
@@ -26,17 +34,17 @@ expressly stated in the License.
 #include "ros/transport_hints.h"
 #include "std_msgs/Int32.h"
 
-// ROS Topic process that publishes and subscribes to a ROS Topic
-// input Channel is used to write data to the embedded snip 
-// and feedback channel is used to read data fromt the embedded snip
 namespace ros_demo {
-const char TOPIC[] = "loihiTopic";
+// ROS Topic which the PubSubProcess publishes and subscribes to
+const char TOPIC[] = "example";
+// Input CSP Channel which the Host Process writes to communicate with
+// embedded snip
 const char input_channel[] = "input";
+// Feedback CSP Channel which the Host Process reads from to communicate with
+// embedded snip
 const char feedback_channel[] = "feedback";
-const int QUEUE_SIZE = 10; // Queue of 1 int is a 32-bit message 
-
-// The class PubSubProcess inherits from ConcurrentHostSnip
-// ConcurrentHostSnip is a base class for snips that run concurrently with the Loihi model
+// ROS Queue size for buffering messages
+const int QUEUE_SIZE = 1000;
 
 class PubSubProcess : public ConcurrentHostSnip {
   // ROS Node Handle
@@ -45,7 +53,7 @@ class PubSubProcess : public ConcurrentHostSnip {
   ros::Publisher _pub;
   // ROS Topic Subscriber (Subscribes to TOPIC and writes to input_channel)
   ros::Subscriber _sub;
-  // boolean flag to determine a loop is now complete, old data has been processed and new data has arrived
+  // Handshake to determine a loop is now complete, old data has been processed and new data has arrived
   bool _control_loop_complete;
 
  public:
@@ -59,8 +67,7 @@ class PubSubProcess : public ConcurrentHostSnip {
     const char* argv[1] = {"PubSubProcess"};
     ros::init(argc, const_cast<char**>(argv), "pubsub");
 
-    // Create the ROS Node Handle that will allows to communicate with the ROS system. 
-    // including publishing and  sucbcribing to topics, aka node
+    // Create the ROS Node Handle
     _node = std::make_unique<ros::NodeHandle>();
 
     // Subscribes to a ROS Topic "example" and registers a callback
@@ -108,7 +115,7 @@ class PubSubProcess : public ConcurrentHostSnip {
       uint32_t data[1] = {0};
       readChannel(feedback_channel, data, 1);
 
-      // Create a ROS Message 
+      // Create a ROS Message (http://wiki.ros.org/std_msgs)
       std_msgs::Int32 msg;
       msg.data = data[0];
 
