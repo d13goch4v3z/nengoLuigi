@@ -48,6 +48,8 @@ class PubSubProcess : public ConcurrentHostSnip {
   // boolean flag to determine a loop is now complete, old data has been processed and new data has arrived
   bool _control_loop_complete;
 
+
+
  public:
   PubSubProcess() : _control_loop_complete(true) {
     // Write some initial data to input channel
@@ -68,6 +70,12 @@ class PubSubProcess : public ConcurrentHostSnip {
 
     // Register to publish to ROS Topic "example"
     _pub = _node->advertise<std_msgs::Int32>(TOPIC, QUEUE_SIZE);
+
+    const int array_size = 100; 
+    std::vector<int> array(array_size, 0);
+
+    const double scale 10.0; 
+    const double shift = array_size / 2.0;
   }
 
   void run(std::atomic_bool& endOfExecution) override {

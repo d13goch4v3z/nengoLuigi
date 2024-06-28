@@ -55,6 +55,8 @@ haveDisplay = "DISPLAY" in os.environ
 if not haveDisplay:
     mpl.use('Agg')
 os.environ['KAPOHOBAY'] = '1'
+os.chdir("/home/cortana/nengo_loihi_debug/ros/nxcore")
+print(os.getcwd())
 def setupNetwork():
     # Board ID
     boardId = 1
@@ -114,6 +116,7 @@ def setupNetwork():
     targetAxonId = 0
     targetChipId = n2Core.parent.id
     n2Core.createDiscreteAxon(0, targetChipId, targetCoreId, targetAxonId)
+    
 
     # Configure input axon
 

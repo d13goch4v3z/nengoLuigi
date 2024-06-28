@@ -44,6 +44,11 @@ import matplotlib as mpl
 haveDisplay = "DISPLAY" in os.environ
 if not haveDisplay:
     mpl.use('Agg')
+
+os.environ['KAPOHOBAY'] = '1'
+os.chdir("/home/cortana/nengo_loihi_debug/ros/nxcore")
+print(os.getcwd())
+
 # plt is used for graphical displays
 # N2Board module provides access to the neuromorphic hardware
 

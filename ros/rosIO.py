@@ -40,7 +40,7 @@ class lui:
         n2Cores[0].cxCfg[0].configure(vthProfile=0, cxProfile=0) # configure bias and mantissa exponent bias*(2^6) = 6400
 
         # configure the synaptic parameters (weight and synaptic formatId)
-        
+        """
         for i, j in enumerate(n2Cores[0].synapses): 
             j.CIdx = 0
             j.Wgt = 64
@@ -59,7 +59,7 @@ class lui:
 
         for coreId, n2Core in enumerate(n2Cores[1:]):
             n2Core.numUpdates.configure(numUpdates=1)
-            n2Core.vthProfileCfg[0].staticCfg.configure(vth=1000*(coreId+1))
+            n2Core.vthProfileCfg[0].staticCfg.configure(vth=10)
             n2Core.synapses[0].CIdx = 0 #each core has diffrent synapses
             n2Core.synapses[0].Wgt = 64 
             n2Core.synapses[0].synFmtId = 1
@@ -80,7 +80,7 @@ class lui:
                                       dstChipId=0,
                                       dstCoreId=n2Core.id,
                                       dstSynMapId=0)
-            
+            """
         # create host snip 
         pubSubProcess = board.createSnip(phase=Phase.HOST_CONCURRENT_EXECUTION, library=self.lib)
         cFilePath = os.path.dirname(os.path.realpath(__file__)) + "/runmgmt.c"
