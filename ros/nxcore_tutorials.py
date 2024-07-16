@@ -197,7 +197,8 @@ class experiment_3:
         board.n2Chips[0].n2Cores[0].cxCfg[0].configure(bias=100, biasExp=6, vthProfile=0, cxProfile=0)
 
         n2Cores = board.n2Chips[0].n2CoresAsList
-        for i, j in enumerate(n2Cores[1:]):
+        for i, j in enumerate(n2Cores):
+            
             j.numUpdates.configure(numUpdates=1)
             j.vthProfileCfg[0].staticCfg.configure(vth=1000*(i+1)) # each core has a compartment
             j.synapses[0].CIdx = 0
@@ -262,6 +263,42 @@ class experiment_3:
         filename = "experiment3Probe"
         fig.savefig(filename + ".png", dpi=200) 
     
+    class experiment_4: 
+        def __init__(self):
+            pass 
+        def experiment4(self): 
+            """
+            +--------------------+
+            |                    |
+            |      ________      |
+            |     /        \     |
+            |    |          |    |
+            |    | bias 100 |    |
+            |    |biasExp=6 |    |
+            |     \________/     |
+            |                    |
+            +--------------------+
+            |   |    |    |   |  |
+            +---|----|----|---|--+
+                |    |    |   |
+                |    |    |   |
+                |    |    |   |
+                +----+----+---+
+            """
+            boardId = 1 
+            numChips = 1
+            numCoresPerChip = [100]
+            numSynapsesPerCore = [[1]*100]
+            board = N2Board(boardId, numChips, numCoresPerChip, numSynapsesPerCore)
+            board.n2Chips[0].n2Cores[0].cxProfileCfg[0].configure(decayV=int(1/16*2**12))
+            board.n2Chips[0].n2Cores[0].cxMetaState[0].configure(phase0=2)
+            board.n2Chips[0].n2Cores[0].vthProfileCfg[0].staticCfg.configure(vth=1000)
+            board.n2Chips[0].n2Cores[0].numUpdates.configure(numUpdates=1)
+            board.n2Chips[0].n2Cores[0].cxCfg[0].configure(bias=100, biasExp=6, vthProfile=0, cxProfile=0)
+            n2Cores = board.n2Chips[0].n2CoresAsList
+            for i, j in enumerate(n2Cores[])
+
+
 
 if __name__ == "__main__":
     exp2 = experiment_2()
