@@ -73,8 +73,8 @@ class PubSubProcess : public ConcurrentHostSnip {
 
     const int array_size = 100; 
     std::vector<int> array(array_size, 0);
-
-    const double scale 10.0; 
+    
+    const double scale = 10.0; 
     const double shift = array_size / 2.0;
   }
 

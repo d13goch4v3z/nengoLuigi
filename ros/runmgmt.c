@@ -21,24 +21,33 @@ expressly stated in the License.
 #include <time.h>
 #include <unistd.h>
 
+#define NUM_CONNECTIONS 100
+int feedbackChannelId = -1; //Store the IDs of the communication channels
+int inputChannelId = -1; //Store the IDs for the communication channels
+
 int do_run_mgmt(runState *s) {
     // Runs on every timestep till the 1000th timestep
-    return s->time_step <= 1000 ? 1 : 0;
+     if (s->time_step == 1) {
+    feedbackChannelId = getChannelID("feedback"); //Get ID for the feedback channel
+    inputChannelId = getChannelID("input"); //Get ID for the input channel
+    }
+    return 1;
 }
 
 void run_mgmt(runState *s) {
-    // Reads an int from input channel, prints it, increments it and writes it to feedback channel
-    int inputChannelID = getChannelID("input");
-    int feedbackChannelID = getChannelID("feedback");
 
     int data[1] = {0};
+    readChannel(inputChannelId, data, 1);
 
-    readChannel(inputChannelID, data, 1);
+    uint16_t coreId = data[0];
+    //coreId = 1 << 14 | (coreId & 0x3FFF);
 
-    printf("Input Received: %d\n", data[0]);
+    //Inject spike in the core
+    printf("Spike injected in Core: %d\n", data[0]);
+    nx_send_discrete_spike(s->time_step, nx_nth_coreid(0), data[0]);
 
     // Increment data
     data[0] += 1;
 
-    writeChannel(feedbackChannelID, data, 1);
+    writeChannel(feedbackChannelId, data, 1);
 }
