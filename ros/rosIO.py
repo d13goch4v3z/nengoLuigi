@@ -29,46 +29,36 @@ class lui:
         boardId = 1 
         numChips = 1
         numCoresPerChip = [1]
-        numCompartmentsPerCore = [[100]]
-        board = N2Board(boardId, numChips, numCoresPerChip, numCompartmentsPerCore)
+        synapsesPerCore = [[100]]
+        board = N2Board(boardId, numChips, numCoresPerChip, synapsesPerCore)
         # obatin the cores object 
         n2Core = board.n2Chips[0].n2Cores[0]
         n2Core.cxProfileCfg[0].configure(decayV=int(1/16*2**12))
         n2Core.vthProfileCfg[0].staticCfg.configure(vth=10)
-        n2Core.numUpdates.configure(numUpdates=1)
-        for i, j in enumerate(n2Core.synapses):
+        n2Core.numUpdates.configure(numUpdates=100)
+    
+        for i in range(0,99): 
             n2Core.cxCfg[i].configure(vthProfile = 0, cxProfile = 0)
-           
-        # checklist to configure the cores
-        # for i, j in enumerate(n2Cores):
-        #     j.cxProfileCfg[0].configure(decayV=int(1/16*2**12))
-        #     j.cxMetaState[0].configure(phase0=2)
-        #     j.vthProfileCfg[0].staticCfg.configure(vth=10)
-        #     j.numUpdates.configure(numUpdates=1)
-        #     j.cxCfg[0].configure(bias = 0, biasExp = 6, vthProfile = 0, cxProfile = 0)
-        #     j.synapses[0].CIdx = 0
-        #     j.synapses[0].Wgt = 64
-        #     j.synapses[0].synFmtId = 1
+            n2Core.synapses[i].CIdx = i
+            n2Core.synapses[i].Wgt = 10
+            n2Core.synapses[i].synfmtId = 1
+        print("n2core parent id:", n2Core.parent.id)
 
-        #     j.synapseFmt[1].wgtExp = 0
-        #     j.synapseFmt[1].wgtExp = 0
-        #     j.synapseFmt[1].wgtBits = 7
-        #     j.synapseFmt[1].numSynapses = 63
-        #     j.synapseFmt[1].cIdxOffset = 0
-        #     j.synapseFmt[1].cIdxMult = 0
-        #     j.synapseFmt[1].idxBits = 1
-        #     j.synapseFmt[1].fanoutType = 2
-        #     j.synapseFmt[1].compression = 0
+        n2Core.synapseFmt[1].wgtExp = 0
+        n2Core.synapseFmt[1].wgtBits = 7
+        n2Core.synapseFmt[1].numSynapses = 63
+        n2Core.synapseFmt[1].cIdxOffset = 0
+        n2Core.synapseFmt[1].cIdxMult = 0
+        n2Core.synapseFmt[1].idxBits = 1
+        #n2Core.synapseFmt[1].fanoutType = 2
+        n2Core.synapseFmt[1].compression = 0
 
-        #     j.synapseMap[0].synapsePtr = 0
-        #     j.synapseMap[0].synapseLen = 1 # len(synapses)
-        #     j.synapseMap[0].discreteMapEntry.configure()
-            
-        #     # j.createDiscreteAxon(srcCxId=0, 
-        #     #                         dstChipId=0, 
-        #     #                         dstCoreId=j.id, 
-        #     #                         dstSynMapId=0) 
-
+        for i in range(0, 99): 
+            n2Core.synapseMap[i].synapsePtr = 0
+            n2Core.synapseMap[i].synapseLen = 100
+            n2Core.synapseMap[i].discreteMapEntry.configure()
+        
+        
         # create host snip 
         pubSubProcess = board.createSnip(phase=Phase.HOST_CONCURRENT_EXECUTION, library=self.lib)
         cFilePath = os.path.dirname(os.path.realpath(__file__)) + "/runmgmt.c"
@@ -88,7 +78,7 @@ class lui:
         mon = self.board.monitor
         n2Core = self.board.n2Chips[0].n2Cores[0]
         numbers = list(range(100))
-        sProbe = mon.probe(n2Core.cxState, numbers, 'spike')[0]
+        sProbe = mon.probe(n2Core.cxState, numbers, 'u')
         # for i in n2Core.synapses:
         #     mon.probe()
         # # for n2Core in n2Cores:
